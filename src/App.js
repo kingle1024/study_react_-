@@ -28,11 +28,20 @@ const App = () => {
     setData(newDiaryList);
   };
 
+  const onEdit = (targetId, newContent) => {
+    // filter 해서 찾음 
+    setData(      
+      data.map((it) => 
+        it.id === targetId ? { ...it, content: newContent } : it
+      )
+    );
+  }
+
   return (
     <div className="App">
       <h2>일기장</h2>
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList onRemove={onRemove} diaryList={data} />
+      <DiaryList onRemove={onRemove} onEdit={onEdit} diaryList={data} />
     </div>
   );
 }
