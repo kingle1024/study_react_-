@@ -4,6 +4,7 @@ import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
 import LifeCycle from './LifeCycle';
+import LifeCycle2 from "./LifeCycle2";
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -41,7 +42,7 @@ const App = () => {
   return (
     <div className="App">
       <h2>일기장</h2>
-      <LifeCycle />
+      <LifeCycle2 />
       <DiaryEditor onCreate={onCreate} />
       <DiaryList onRemove={onRemove} onEdit={onEdit} diaryList={data} />
     </div>
