@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
+import OptiomizeTest from "./OptimizeTest";
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -60,7 +61,6 @@ const App = () => {
 
   const getDiaryAnalysis = useMemo( // useMemo는 함수를 전달 받아서 콜백함수가 return 하는 값을 return한다.
     () => {
-      console.log('일기 분석 시작');
 
       const goodCount = data.filter((it) => it.emotion >=3 ).length;
       const badCount = data.length - goodCount;
@@ -75,6 +75,7 @@ const App = () => {
   return (
     <div className="App">
       <h2>일기장</h2>      
+      <OptiomizeTest />
       <DiaryEditor onCreate={onCreate} />
       <div>전체 일기 : {data.length}</div>
       <div>기분 좋은 일기 개수 : {goodCount}</div>
