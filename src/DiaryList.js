@@ -16,5 +16,5 @@ const DiaryList = ({onRemove, diaryList}) => {
 DiaryList.defaultProps = {
   diaryList: [],
 }
-
+ 
 export default DiaryList;
