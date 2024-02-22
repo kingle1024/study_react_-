@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import logo from './logo.svg';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
@@ -10,8 +10,7 @@ const App = () => {
 
   const getData = async() => {
     const res = await fetch('https://jsonplaceholder.typicode.com/comments'
-    ).then((res) => res.json());
-    console.log(res);
+    ).then((res) => res.json());    
 
     const initData = res.slice(0, 20).map((it) => {
       return {
@@ -59,10 +58,28 @@ const App = () => {
     );
   }
 
+  const getDiaryAnalysis = useMemo( // useMemo는 함수를 전달 받아서 콜백함수가 return 하는 값을 return한다.
+    () => {
+      console.log('일기 분석 시작');
+
+      const goodCount = data.filter((it) => it.emotion >=3 ).length;
+      const badCount = data.length - goodCount;
+      const goodRatio = (goodCount / data.length) * 100;
+
+      return {goodCount, badCount, goodRatio};
+    }, [data.length] // length가 변환될 때마다 실행된다. 
+  );
+
+  const {goodCount, badCount, goodRatio} = getDiaryAnalysis; // useMemo는 함수를 전달 받아서 콜백함수가 return 하는 값을 return한다.
+
   return (
     <div className="App">
-      <h2>일기장</h2>
+      <h2>일기장</h2>      
       <DiaryEditor onCreate={onCreate} />
+      <div>전체 일기 : {data.length}</div>
+      <div>기분 좋은 일기 개수 : {goodCount}</div>
+      <div>기분 나쁜 일기 개수 : {badCount}</div>
+      <div>기분 좋은 일기 비율 : {goodRatio}%</div>
       <DiaryList onRemove={onRemove} onEdit={onEdit} diaryList={data} />
     </div>
   );
