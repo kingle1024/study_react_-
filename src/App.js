@@ -1,12 +1,36 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import logo from './logo.svg';
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
 import OptiomizeTest from "./OptimizeTest";
 
+const reducer = (state, action) => {
+  switch(action.type) {
+    case 'INIT': {
+      return action.data;
+    }
+    case 'CREATE': {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data,
+        created_date
+      }
+      return [newItem, ...state];
+    }
+    case 'REMOVE': {
+      return state.filter((it) => it.id !== action.targetId);    
+    }
+    case 'EDIT': {
+      return state.map((it) => it.id === action.targetId ? {...it, content:action.newContent} : it)
+    }
+    default:
+    return state;
+  }
+}
+
 const App = () => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+  const [data, dispatch] = useReducer(reducer, []); // 초깃값을 빈 배열로 전달. reducer 함수 만들어주어야 함.
   const dataId = useRef(0);
 
   const getData = async() => {
@@ -23,41 +47,34 @@ const App = () => {
       }
     })
 
-    setData(initData);
+    dispatch({type:'INIT', data:initData});
   };
 
   useEffect(() => { // mount 되는 시점에 바로 실행됨
     getData();
   }, []);
 
-  const onCreate = useCallback(
-    (author, content, emotion) => {
-      const created_date = new Date().getTime();
-      const newItem = {
-        author,
-        content,
-        emotion,
-        created_date,
-        id: dataId.current,
-      };
+  const onCreate = useCallback((author, content, emotion) => {
+      dispatch({
+        type: 'CREATE', 
+        data: {author, content, emotion, id:dataId.current}
+      });
       dataId.current += 1;
-      setData((data) => [newItem, ...data]);
   }, []);
 
-  const onRemove = (targetId) => {
-    console.log(`${targetId}가 삭제되었습니다.`);
-    const newDiaryList = data.filter((it) => it.id !== targetId);
-    console.log(newDiaryList);
-    setData(newDiaryList);
-  };
+  const onRemove = useCallback((targetId) => {        
+    dispatch({
+      type: 'REMOVE',
+      data: targetId
+    })    
+  }, []);
 
   const onEdit = (targetId, newContent) => {
-    // filter 해서 찾음 
-    setData(      
-      data.map((it) => 
-        it.id === targetId ? { ...it, content: newContent } : it
-      )
-    );
+    dispatch({
+      type: 'EDIT',
+      targetId,
+      newContent
+    })
   }
 
   const getDiaryAnalysis = useMemo( // useMemo는 함수를 전달 받아서 콜백함수가 return 하는 값을 return한다.
